@@ -56,7 +56,7 @@ OFILES= $(COMMONO) $(EHPIXO) $(PKO) $(PCAO) $(POLOGO) $(FASTICO)
 
 MAIN = src/main.cpp
 
-EXE = fgrm
+EXE = fg_rm
 
 default : $(EXE)
 

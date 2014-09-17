@@ -195,9 +195,8 @@ static void analyze_cls()
       double cl_cosmo=cls_cosmo[jj]*norm_fsky;
       double cl_clean=cls_clean[jj]*norm_fsky;
       double cl_res=cls_res[jj]*norm_fsky;
-      double cvar=cl_cosmo*sqrt(2*norm_fsky/(2*jj+1.0));
-      fprintf(fo,"%ld %lE %lE %lE %lE\n",jj,
-	      cl_clean,cl_cosmo,cl_res,cvar);
+      fprintf(fo,"%ld %lE %lE %lE\n",jj,
+	      cl_clean,cl_cosmo,cl_res);
     }
     fclose(fo);
   }

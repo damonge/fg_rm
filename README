@@ -1,0 +1,48 @@
+fg_rm is the set of tools used in ADD REFERENCE to study the efficiency
+of three different blind foreground cleaning methods for HI intensity 
+mapping. fg_rm is written in C and C++.
+
+1 Installation.
+  a) Modify the appropriate fields in the Makefile, in particular the paths
+     to the dependencies' headers and libraries
+  b) typing 'make' should do the trick
+
+2 Dependencies.
+  fg_rm uses several external libraries, which need to be installed before
+  compiling it:
+    a) GSL - GNU Scientific Library (version >= 1.16)
+    b) FFTW - Fastest Fourier Transform of the West (version >= 3.3.3)
+    c) HEALPix's C library (version >=3.11)
+    d) libsharp - Library for spherical harmonic transforms
+    e) CFITSIO
+    f) IT++ (version >= 4.2)
+
+3 Usage.
+  To run fg_rm just type
+    $ ./fg_rm <param filename>
+  where <param filename> is the path to a parameter file controling the
+  behaviour of fg_rm. The public version of the code comes with a sample
+  param file (param.ini). The comments included in it are fairly explanatory.
+
+4 Output.
+  Depending on the parameters used to run fg_rm it will generate four
+  different types of files:
+    a) Foreground-cleaned maps: a set of HEALPix files containing a
+       the cleaned temperature maps.
+    b) Angular power spectra: a file containing 4 columns in this order:
+        1- Multipole number l
+        2- Angular power spectrum of the foreground-cleaned map
+        3- Angular power spectrum of the foreground-free map
+        4- Angular power spectrum of the cleaning residuals
+    c) Radial power spectra: a file containing 4 columns in this order:
+        1- Radial wave number k_parallel
+        2- Radial power spectrum of the foreground-cleaned map
+        3- Radial power spectrum of the foreground-free map
+        4- Radial power spectrum of the cleaning residuals
+    d) Principal eigenvalues (only for PCA).
+
+  For the file types a-c, one file will be written for each input map.
+  Both the input and output files should have a suffix _XXX where XXX
+  is a 3-digit integer number identifying each frequency band. This
+  format is automatically used by the public code CRIME
+  (http://intensitymapping.physics.ox.ac.uk/CRIME.html).
