@@ -7,7 +7,8 @@ OPTIONS = -Wall -O3 -fopenmp
 #
 ### Behavioural flags
 #Output more information (only necessary for debugging)
-DEFINEFLAGS += -D_VERBOSE
+#DEFINEFLAGS += -D_VERBOSE
+#DEFINEFLAGS += -D_RMS_FROM_MAPS
 #
 ###Path to libraries and headers
 ###If two or more of the dependencies reside in the same paths, only

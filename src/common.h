@@ -1,3 +1,24 @@
+///////////////////////////////////////////////////////////////////////
+//                                                                   //
+//   Copyright 2012 David Alonso                                     //
+//                                                                   //
+//                                                                   //
+// This file is part of fg_rm.                                       //
+//                                                                   //
+// fg_rm is free software: you can redistribute it and/or modify it  //
+// under the terms of the GNU General Public License as published by //
+// the Free Software Foundation, either version 3 of the License, or //
+// (at your option) any later version.                               //
+//                                                                   //
+// fg_rm is distributed in the hope that it will be useful, but      //
+// WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU //
+// General Public License for more details.                          //
+//                                                                   //
+// You should have received a copy of the GNU General Public License //
+// along with fg_rm.  If not, see <http://www.gnu.org/licenses/>.    //
+//                                                                   //
+///////////////////////////////////////////////////////////////////////
 #ifndef _COMMON_H_
 #define _COMMON_H_
 
@@ -16,7 +37,7 @@ extern "C" {
 #define NU_21CM 1420.4
 #define OMEGA_M 0.3
 
-extern char glob_prefix_out[256]; // Output prefix
+extern char glob_prefix_out[256];
 extern char glob_prefix_cosmo_in[256];
 extern char glob_prefix_in[256];
 extern char glob_fname_nuTable[256];

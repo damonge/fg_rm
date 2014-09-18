@@ -1,3 +1,24 @@
+///////////////////////////////////////////////////////////////////////
+//                                                                   //
+//   Copyright 2012 David Alonso                                     //
+//                                                                   //
+//                                                                   //
+// This file is part of fg_rm.                                       //
+//                                                                   //
+// fg_rm is free software: you can redistribute it and/or modify it  //
+// under the terms of the GNU General Public License as published by //
+// the Free Software Foundation, either version 3 of the License, or //
+// (at your option) any later version.                               //
+//                                                                   //
+// fg_rm is distributed in the hope that it will be useful, but      //
+// WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU //
+// General Public License for more details.                          //
+//                                                                   //
+// You should have received a copy of the GNU General Public License //
+// along with fg_rm.  If not, see <http://www.gnu.org/licenses/>.    //
+//                                                                   //
+///////////////////////////////////////////////////////////////////////
 #include "common.h"
 #ifdef __cplusplus
 extern "C" {
@@ -7,8 +28,8 @@ extern "C" {
 }
 #endif //__cplusplus
 
-char glob_prefix_out[256]="output"; // Output prefix
-char glob_prefix_cosmo_in[256]="signal"; // Output
+char glob_prefix_out[256]="output";
+char glob_prefix_cosmo_in[256]="signal";
 char glob_prefix_in[256]="map";
 char glob_fname_nuTable[256]="nutable.txt";
 char glob_fname_mask[256]="mask.fits";
@@ -126,6 +147,8 @@ static void read_nu_arr(void)
     glob_nuf_arr[ii]=nu1;
     glob_nu_arr[ii]=0.5*(nu0+nu1);
   }
+  printf(" %d frequency channels found, labelled %03d to %03d\n\n",
+	 glob_n_nu,glob_map_suffixes[0],glob_map_suffixes[glob_n_nu-1]);
 }
 
 static void read_rms(void)
@@ -133,7 +156,9 @@ static void read_rms(void)
   int ii;
   glob_rms_arr=(double *)my_malloc(glob_n_nu*sizeof(double));
 
-#ifndef _RMS_FROM_MAPS
+#ifdef _RMS_FROM_MAPS
+  glob_calculate_rms=1;
+#else //_RMS_FROM_MAPS
   glob_calculate_rms=0;
 #endif //_RMS_FROM_MAPS
   if(glob_calculate_rms) {
@@ -165,7 +190,7 @@ static void read_rms(void)
     FILE *fi=my_fopen(glob_fname_rms,"r");
     int nl=linecount(fi);
     rewind(fi);
-    if(nl!=glob_n_nu) report_error(1,"Wrong file for weights\n");
+    if(nl!=glob_n_nu) report_error(1,"Wrong number of frequency channels\n");
     for(ii=0;ii<glob_n_nu;ii++) {
       double nu,rms;
       int stat=fscanf(fi,"%lf %lf",&nu,&rms);
@@ -174,6 +199,7 @@ static void read_rms(void)
     }
     fclose(fi);
   }
+  printf("\n");
 }
 
 void write_cleaned_maps()
@@ -192,6 +218,7 @@ void write_cleaned_maps()
   }
 
   free(map_clean);
+  printf("\n");
 }
 
 static void read_mask(void)
@@ -201,6 +228,8 @@ static void read_mask(void)
   glob_mask=he_read_healpix_map(glob_fname_mask,&glob_nside,0);
   glob_nth=0;
   
+  printf(" * Resolution parameter Nside = %ld\n",glob_nside);
+
   for(ii=0;ii<12*glob_nside*glob_nside;ii++) {
     if((glob_mask[ii]<-0.01)||((glob_mask[ii]>0.01)&&(glob_mask[ii]<0.99))||(glob_mask[ii]>1.01))
       report_error(1,"Mask must be 0 or 1 : lE\n",glob_mask[ii]);
@@ -212,6 +241,8 @@ static void read_mask(void)
   }
   
   glob_fsky=(double)glob_nth/(12*glob_nside*glob_nside);
+  printf(" * Sky fraction : %.2lf%%\n",glob_fsky*100);
+  printf("\n");
   
   glob_indices_in_mask=(long *)my_malloc(glob_nth*sizeof(long));
   glob_nth=0;
@@ -229,7 +260,6 @@ static void read_params(char *fname_params)
   int n_lin,ii;
   
   //Read parameters from file
-  printf("Reading run parameters \n");
   fi=my_fopen(fname_params,"r");
   n_lin=linecount(fi);
   rewind(fi);
@@ -277,16 +307,29 @@ static void read_params(char *fname_params)
   }
   fclose(fi);
 
+  printf(" Run parameters:\n");
+  printf("  * Output prefix: %s\n",glob_prefix_out);
+  printf("  * Input prefix: %s\n",glob_prefix_in);
+  printf("  * Input cosmo prefix: %s\n",glob_prefix_cosmo_in);
+  printf("  * Frequency table file: %s\n",glob_fname_nuTable);
+  printf("  * Mask file: %s\n",glob_fname_mask);
+  printf("  * Inverse weights file %s\n",glob_fname_rms);
   if(!strcmp(glob_method,"pca"))
-    printf("Doing PCA\n");
+    printf("  * Method: PCA\n");
   else if(!strcmp(glob_method,"polog"))
-    printf("Doing LOS fitting\n");
+    printf("  * Method: LOS fitting\n");
   else if(!strcmp(glob_method,"fastica"))
-    printf("Doing ICA\n");
+    printf("  * Method: ICA\n");
   else {
     printf("WTF??\n");
     exit(1);
   }
+  printf("  * Number of FG dof: %d\n",glob_n_foregrounds);
+  if(glob_analyze_pk)
+    printf("  * %d independent bins for radial Pk\n",glob_n_bins_radial);
+  if(glob_output_maps)
+    printf("  * Clean maps written to %s_clean_XXX.fits\n",glob_prefix_out);
+  printf("\n");
 }
 
 void read_data(char *fname_params)
@@ -295,11 +338,11 @@ void read_data(char *fname_params)
 
   printf("Reading params\n");
   read_params(fname_params);
-  printf("Reading nu array\n");
+  printf("Reading frequency table\n");
   read_nu_arr();
   printf("Reading mask\n");
   read_mask();
-  printf("Reading rms\n");
+  printf("Reading inverse weights\n");
   read_rms();
 
   printf("Reading maps\n");
@@ -311,21 +354,23 @@ void read_data(char *fname_params)
     long ns,jj;
     sprintf(fname,"%s_%03d.fits",glob_prefix_in,glob_map_suffixes[ii]);
 #ifdef _VERBOSE
-    printf("Reading map %s\n",fname);
+    printf(" Reading map %s\n",fname);
 #endif //_VERBOSE
     dum_map=he_read_healpix_map(fname,&ns,0);
-    if(ns!=glob_nside) report_error(1,"Shit\n");
+    if(ns!=glob_nside) report_error(1," Wrong resolution parameter : %d != %d\n",ns,glob_nside);
     for(jj=0;jj<glob_nth;jj++)
       glob_data_maps[ii+jj*glob_n_nu]=(double)(dum_map[glob_indices_in_mask[jj]]);
-    //      glob_data_maps[ii*glob_nth+jj]=(double)(dum_map[glob_indices_in_mask[jj]]);
     free(dum_map);
   }
+  printf("\n");
 }
 
 void postprocess_clean_maps(void)
 {
   long ii;
   double *mean=(double *)my_calloc(glob_n_nu,sizeof(double));
+
+  printf("Subtracting leftover mean from clean maps\n");
 
   for(ii=0;ii<glob_nth;ii++) {
     int jj;
@@ -343,6 +388,7 @@ void postprocess_clean_maps(void)
   }
 
   free(mean);
+  printf("\n");
 }
 
 void end_all(void)

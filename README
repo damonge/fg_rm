@@ -46,3 +46,9 @@ mapping. fg_rm is written in C and C++.
   is a 3-digit integer number identifying each frequency band. This
   format is automatically used by the public code CRIME
   (http://intensitymapping.physics.ox.ac.uk/CRIME.html).
+
+5 License.
+  fg_rm is distributed under the GPL license (see COPYING in the root
+  directory). We kindly ask you to cite the program's website
+   "http://intensitymapping.physics.ox.ac.uk/Software"
+  and accompanying paper TODO when using it for published results

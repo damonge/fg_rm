@@ -1,3 +1,24 @@
+///////////////////////////////////////////////////////////////////////
+//                                                                   //
+//   Copyright 2012 David Alonso                                     //
+//                                                                   //
+//                                                                   //
+// This file is part of fg_rm.                                       //
+//                                                                   //
+// fg_rm is free software: you can redistribute it and/or modify it  //
+// under the terms of the GNU General Public License as published by //
+// the Free Software Foundation, either version 3 of the License, or //
+// (at your option) any later version.                               //
+//                                                                   //
+// fg_rm is distributed in the hope that it will be useful, but      //
+// WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU //
+// General Public License for more details.                          //
+//                                                                   //
+// You should have received a copy of the GNU General Public License //
+// along with fg_rm.  If not, see <http://www.gnu.org/licenses/>.    //
+//                                                                   //
+///////////////////////////////////////////////////////////////////////
 #include <itpp/itsignal.h>
 #include "common.h"
 
@@ -8,7 +29,9 @@ void do_fastica(int nrm)
 {
   long ii;
 
-  printf("Sorting data\n");
+  printf("Doing FastICA\n");
+
+  printf(" - Sorting data\n");
   mat X=zeros(glob_n_nu,glob_nth);
 
   double *mean_arr=(double *)my_calloc(glob_n_nu,sizeof(double));
@@ -27,7 +50,7 @@ void do_fastica(int nrm)
   }
   
 
-  printf("Setting ICA\n");
+  printf(" - Setting ICA\n");
   Fast_ICA ica(X);
   ica.set_nrof_independent_components(nrm);
   //  ica.set_approach(FICA_APPROACH_DEFL);
@@ -36,21 +59,15 @@ void do_fastica(int nrm)
   //  ica.set_non_linearity(FICA_NONLIN_GAUSS);
   ica.set_epsilon(0.01);
 
-  printf("Doing FASTICA\n");
+  printf(" - Separating components\n");
   ica.separate();
 
-  printf("Getting matrices\n");
+  printf(" - Getting mixing matrices\n");
   mat A=ica.get_mixing_matrix();
   mat S=ica.get_independent_components();
   mat FG=A*S;
 
-  /*
-    printf("X %d %d\n",X.rows(),X.cols());
-    printf("A %d %d\n",A.rows(),A.cols());
-    printf("FG %d %d\n",FG.rows(),FG.cols());
-  */
-
-  printf("Subtracting foregrounds\n");
+  printf(" - Subtracting foregrounds and leftover mean\n");
   for(ii=0;ii<glob_nth;ii++) {
     int jj;
     for(jj=0;jj<glob_n_nu;jj++) {
@@ -60,4 +77,5 @@ void do_fastica(int nrm)
   }
   
   free(mean_arr);
+  printf("\n");
 }

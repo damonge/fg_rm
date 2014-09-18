@@ -3,20 +3,20 @@
 //   Copyright 2012 David Alonso                                     //
 //                                                                   //
 //                                                                   //
-// This file is part of CRIME.                                       //
+// This file is part of fg_rm.                                       //
 //                                                                   //
-// CRIME is free software: you can redistribute it and/or modify it  //
+// fg_rm is free software: you can redistribute it and/or modify it  //
 // under the terms of the GNU General Public License as published by //
 // the Free Software Foundation, either version 3 of the License, or //
 // (at your option) any later version.                               //
 //                                                                   //
-// CRIME is distributed in the hope that it will be useful, but      //
+// fg_rm is distributed in the hope that it will be useful, but      //
 // WITHOUT ANY WARRANTY; without even the implied warranty of        //
 // MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU //
 // General Public License for more details.                          //
 //                                                                   //
 // You should have received a copy of the GNU General Public License //
-// along with CRIME.  If not, see <http://www.gnu.org/licenses/>.    //
+// along with fg_rm.  If not, see <http://www.gnu.org/licenses/>.    //
 //                                                                   //
 ///////////////////////////////////////////////////////////////////////
 #include <stdio.h>
@@ -132,7 +132,7 @@ void he_write_healpix_map(float **tmap,int nfields,long nside,char *fname)
   char *tunit[]={"mK","mK","mK"};
 
   if((nfields!=1)&&(nfields!=3)) {
-    fprintf(stderr,"CRIME: nfields must be 1 or 3\n");
+    fprintf(stderr,"nfields must be 1 or 3\n");
     exit(1);
   }
 
@@ -177,7 +177,7 @@ float *he_read_healpix_map(char *fname,long *nside,int nfield)
   fits_read_key_lng(fptr,"NSIDE",nside,NULL,&status);
   npix=12*(*nside)*(*nside);
   if(npix%naxis[1]!=0) {
-    fprintf(stderr,"CRIME: WTFFF\n");
+    fprintf(stderr,"WTFFF\n");
     exit(1);
   }
 
@@ -273,7 +273,7 @@ long *he_query_strip(long nside,double theta1,double theta2,
   if((theta2<=theta1)||
      (theta1<0)||(theta1>M_PI)||
      (theta2<0)||(theta2>M_PI)) {
-    fprintf(stderr,"CRIME: wrong strip boundaries\n");
+    fprintf(stderr,"wrong strip boundaries\n");
     exit(1);
   }
 

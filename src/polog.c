@@ -1,3 +1,24 @@
+///////////////////////////////////////////////////////////////////////
+//                                                                   //
+//   Copyright 2012 David Alonso                                     //
+//                                                                   //
+//                                                                   //
+// This file is part of fg_rm.                                       //
+//                                                                   //
+// fg_rm is free software: you can redistribute it and/or modify it  //
+// under the terms of the GNU General Public License as published by //
+// the Free Software Foundation, either version 3 of the License, or //
+// (at your option) any later version.                               //
+//                                                                   //
+// fg_rm is distributed in the hope that it will be useful, but      //
+// WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU //
+// General Public License for more details.                          //
+//                                                                   //
+// You should have received a copy of the GNU General Public License //
+// along with fg_rm.  If not, see <http://www.gnu.org/licenses/>.    //
+//                                                                   //
+///////////////////////////////////////////////////////////////////////
 #include "common.h"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
@@ -139,9 +160,6 @@ static void subtract_foregrounds_nlin(void)
 	if(status) break;
 	size=gsl_multimin_fminimizer_size(minimizer);
 	status=gsl_multimin_test_size(size,1E-6);
-#ifdef _VERBOSE
-	//	if(status==GSL_SUCCESS) printf("Converged!\n");
-#endif //_VERBOSE
       } while((status==GSL_CONTINUE)||(iter<1000));
       
       gsl_vector_memcpy(v_c,minimizer->x);
@@ -178,7 +196,6 @@ static void subtract_foregrounds_lin(void)
     gsl_matrix *x_shr=gsl_matrix_alloc(glob_n_nu,n_remove);
     gsl_matrix_memcpy(x_shr,xmat);
 
-    //TODO: should we subtract in log or lin space?
 #pragma omp for
     for(ii=0;ii<glob_nth;ii++) {
       int jj;
@@ -205,24 +222,6 @@ static void subtract_foregrounds_lin(void)
       gsl_multifit_wlinear(x_shr,v_w,v_y,v_c,cov_c,&chi2,wsp);
       gsl_blas_dgemv(CblasNoTrans,1,x_shr,v_c,0,v_y); //v_y=X*c
       
-      /*
-      for(jj=0;jj<n_remove;jj++) {
-	double c=gsl_vector_get(v_c,jj);
-	if(c!=c) {
-	  int kk;
-	  for(kk=0;kk<glob_n_nu;kk++)
-	    printf("%lE ",los_dirty[kk]);
-	  printf("\n NAN found\n");
-	  printf("%lE %lE %lE %lE %lE\n",
-		 gsl_vector_get(v_c,0),
-		 gsl_vector_get(v_c,1),
-		 gsl_vector_get(v_c,2),
-		 gsl_vector_get(v_c,3),
-		 gsl_vector_get(v_c,4));
-	  exit(1);
-	}
-      }
-      */
       for(jj=0;jj<glob_n_nu;jj++) {
 	double tfg=pow(10.,gsl_vector_get(v_y,jj));
 	if(tmin<=0) tfg+=2*tmin;
@@ -243,14 +242,16 @@ void do_polog(int nrm)
 {
   int use_nlin=0;
 
+  printf("Doing LOS fitting\n");
   n_remove=nrm;
-  printf("Computing X\n");
+  printf(" - Computing function matrix\n");
   compute_xmat();
-  printf("Solving least squares\n");
+  printf(" - Solving least squares and subtracting\n");
   if(use_nlin)
     subtract_foregrounds_nlin();
   else
     subtract_foregrounds_lin();
   end_polog();
+  printf("\n");
   postprocess_clean_maps();
 }

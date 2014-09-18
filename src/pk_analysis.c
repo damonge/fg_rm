@@ -1,3 +1,24 @@
+///////////////////////////////////////////////////////////////////////
+//                                                                   //
+//   Copyright 2012 David Alonso                                     //
+//                                                                   //
+//                                                                   //
+// This file is part of fg_rm.                                       //
+//                                                                   //
+// fg_rm is free software: you can redistribute it and/or modify it  //
+// under the terms of the GNU General Public License as published by //
+// the Free Software Foundation, either version 3 of the License, or //
+// (at your option) any later version.                               //
+//                                                                   //
+// fg_rm is distributed in the hope that it will be useful, but      //
+// WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU //
+// General Public License for more details.                          //
+//                                                                   //
+// You should have received a copy of the GNU General Public License //
+// along with fg_rm.  If not, see <http://www.gnu.org/licenses/>.    //
+//                                                                   //
+///////////////////////////////////////////////////////////////////////
 #include "common.h"
 #ifdef __cplusplus
 extern "C" {
@@ -211,11 +232,13 @@ static void analyze_cls()
 
 void do_analysis(int i_start,int i_end,int n_superbins)
 {
-  printf("Reading cosmo map and computing residuals\n");
+  printf("Analysing power spectra and residuals\n");
+  printf(" - Reading cosmo map and computing residuals\n");
   init_analysis();
-  printf("Analyzing cls\n");
+  printf(" - Computing C_ls\n");
   analyze_cls();
-  printf("Analyzing radial pk\n");
+  printf(" - Computing radial Pk\n");
   analyze_pkrad(i_start,i_end,n_superbins);
   end_analysis();
+  printf("\n");
 }

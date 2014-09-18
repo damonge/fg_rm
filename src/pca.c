@@ -1,3 +1,24 @@
+///////////////////////////////////////////////////////////////////////
+//                                                                   //
+//   Copyright 2012 David Alonso                                     //
+//                                                                   //
+//                                                                   //
+// This file is part of fg_rm.                                       //
+//                                                                   //
+// fg_rm is free software: you can redistribute it and/or modify it  //
+// under the terms of the GNU General Public License as published by //
+// the Free Software Foundation, either version 3 of the License, or //
+// (at your option) any later version.                               //
+//                                                                   //
+// fg_rm is distributed in the hope that it will be useful, but      //
+// WITHOUT ANY WARRANTY; without even the implied warranty of        //
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU //
+// General Public License for more details.                          //
+//                                                                   //
+// You should have received a copy of the GNU General Public License //
+// along with fg_rm.  If not, see <http://www.gnu.org/licenses/>.    //
+//                                                                   //
+///////////////////////////////////////////////////////////////////////
 #include "common.h"
 #include <gsl/gsl_vector.h>
 #include <gsl/gsl_matrix.h>
@@ -167,15 +188,17 @@ static void subtract_foregrounds(void)
 
 void do_pca(int nrm)
 {
+  printf("Doing PCA\n");
   n_remove=nrm;
-  printf("Computing covariance\n");
+  printf(" - Computing covariance\n");
   compute_covariance();
-  printf("Diagonalizing covariance\n");
+  printf(" - Diagonalizing covariance\n");
   diagonalize_covariance();
-  printf("Computing foreground removal matrix\n");
+  printf(" - Computing foreground removal matrix\n");
   compute_fg_removal();
-  printf("Removing foreground\n");
+  printf(" - Removing foreground\n");
   subtract_foregrounds();
+  printf("\n");
   end_pca();
   postprocess_clean_maps();
 }
